@@ -338,6 +338,7 @@ export const providerSettingsSchema = z.object({
 	// OpenAI
 	openAiBaseUrl: z.string().optional(),
 	openAiApiKey: z.string().optional(),
+	openAiHostHeader: z.string().optional(),
 	openAiR1FormatEnabled: z.boolean().optional(),
 	openAiModelId: z.string().optional(),
 	openAiCustomModelInfo: modelInfoSchema.nullish(),
@@ -431,6 +432,7 @@ const providerSettingsRecord: ProviderSettingsRecord = {
 	// OpenAI
 	openAiBaseUrl: undefined,
 	openAiApiKey: undefined,
+	openAiHostHeader: undefined,
 	openAiR1FormatEnabled: undefined,
 	openAiModelId: undefined,
 	openAiCustomModelInfo: undefined,

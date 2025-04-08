@@ -55,10 +55,20 @@ export class OpenAiHandler extends BaseProvider implements SingleCompletionHandl
 				baseURL,
 				apiKey,
 				apiVersion: this.options.azureApiVersion || azureOpenAiDefaultApiVersion,
-				defaultHeaders,
+				defaultHeaders: {
+					...defaultHeaders,
+					...(this.options.openAiHostHeader ? { Host: this.options.openAiHostHeader } : {}),
+				},
 			})
 		} else {
-			this.client = new OpenAI({ baseURL, apiKey, defaultHeaders })
+			this.client = new OpenAI({
+				baseURL,
+				apiKey,
+				defaultHeaders: {
+					...defaultHeaders,
+					...(this.options.openAiHostHeader ? { Host: this.options.openAiHostHeader } : {}),
+				},
+			})
 		}
 	}
 
@@ -328,7 +338,7 @@ export class OpenAiHandler extends BaseProvider implements SingleCompletionHandl
 	}
 }
 
-export async function getOpenAiModels(baseUrl?: string, apiKey?: string) {
+export async function getOpenAiModels(baseUrl?: string, apiKey?: string, hostHeader?: string) {
 	try {
 		if (!baseUrl) {
 			return []
@@ -339,9 +349,18 @@ export async function getOpenAiModels(baseUrl?: string, apiKey?: string) {
 		}
 
 		const config: Record<string, any> = {}
+		const headers: Record<string, string> = {}
 
 		if (apiKey) {
-			config["headers"] = { Authorization: `Bearer ${apiKey}` }
+			headers["Authorization"] = `Bearer ${apiKey}`
+		}
+
+		if (hostHeader) {
+			headers["Host"] = hostHeader
+		}
+
+		if (Object.keys(headers).length > 0) {
+			config["headers"] = headers
 		}
 
 		const response = await axios.get(`${baseUrl}/models`, config)

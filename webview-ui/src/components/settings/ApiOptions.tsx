@@ -103,6 +103,7 @@ const ApiOptions = ({
 	const [anthropicBaseUrlSelected, setAnthropicBaseUrlSelected] = useState(!!apiConfiguration?.anthropicBaseUrl)
 	const [azureApiVersionSelected, setAzureApiVersionSelected] = useState(!!apiConfiguration?.azureApiVersion)
 	const [openRouterBaseUrlSelected, setOpenRouterBaseUrlSelected] = useState(!!apiConfiguration?.openRouterBaseUrl)
+	const [openAiHostHeaderSelected, setOpenAiHostHeaderSelected] = useState(!!apiConfiguration?.openAiHostHeader)
 	const [googleGeminiBaseUrlSelected, setGoogleGeminiBaseUrlSelected] = useState(
 		!!apiConfiguration?.googleGeminiBaseUrl,
 	)
@@ -145,7 +146,11 @@ const ApiOptions = ({
 			} else if (selectedProvider === "openai") {
 				vscode.postMessage({
 					type: "refreshOpenAiModels",
-					values: { baseUrl: apiConfiguration?.openAiBaseUrl, apiKey: apiConfiguration?.openAiApiKey },
+					values: {
+						baseUrl: apiConfiguration?.openAiBaseUrl,
+						apiKey: apiConfiguration?.openAiApiKey,
+						hostHeader: apiConfiguration?.openAiHostHeader,
+					},
 				})
 			} else if (selectedProvider === "ollama") {
 				vscode.postMessage({ type: "requestOllamaModels", text: apiConfiguration?.ollamaBaseUrl })
@@ -764,6 +769,27 @@ const ApiOptions = ({
 						className="w-full">
 						<label className="block font-medium mb-1">{t("settings:providers.openAiApiKey")}</label>
 					</VSCodeTextField>
+					<div>
+						<Checkbox
+							checked={openAiHostHeaderSelected}
+							onChange={(checked: boolean) => {
+								setOpenAiHostHeaderSelected(checked)
+
+								if (!checked) {
+									setApiConfigurationField("openAiHostHeader", "")
+								}
+							}}>
+							{t("settings:providers.useHostHeader")}
+						</Checkbox>
+						{openAiHostHeaderSelected && (
+							<VSCodeTextField
+								value={apiConfiguration?.openAiHostHeader || ""}
+								onInput={handleInputChange("openAiHostHeader")}
+								placeholder="custom-api-hostname.example.com"
+								className="w-full mt-1"
+							/>
+						)}
+					</div>
 					<ModelPicker
 						apiConfiguration={apiConfiguration}
 						setApiConfigurationField={setApiConfigurationField}
